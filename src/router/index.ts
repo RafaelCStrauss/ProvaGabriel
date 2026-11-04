@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import type { RouteRecordRaw } from 'vue-router';
 
 import TabsPage from '../views/TabsPage.vue';
+import { supabase } from '@/supabase';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -15,6 +16,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/cadastro',
     component: () => import('@/views/CadastroPage.vue'),
+  },
+  {
+    path: '/receitas',
+    component: () => import('@/views/ReceitasPage.vue'),
   },
   {
     path: '/logout',
@@ -47,6 +52,18 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+});
+
+const paginasPublicas = ['/login', '/cadastro'];
+
+router.beforeEach(async (to) => {
+  const { data } = await supabase.auth.getSession();
+  const logado = data.session !== null;
+  const ehPublica = paginasPublicas.includes(to.path);
+
+  if (!logado && !ehPublica) return '/login';
+  if (logado && ehPublica) return '/tabs/tab1';
+  return true;
 });
 
 export default router;

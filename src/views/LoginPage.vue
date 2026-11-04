@@ -12,8 +12,8 @@
 
             <ion-card-content>
               <ion-input
-                v-model="email"
                 type="email"
+                v-model="email"
                 label="E-mail"
                 label-placement="floating"
                 fill="outline"
@@ -24,8 +24,8 @@
               </ion-input>
 
               <ion-input
-                v-model="senha"
                 type="password"
+                v-model="senha"
                 label="Senha"
                 label-placement="floating"
                 fill="outline"
@@ -35,9 +35,9 @@
                 <ion-icon slot="start" :icon="lockClosedOutline" aria-hidden="true" />
                 <ion-input-password-toggle slot="end" />
               </ion-input>
+              <ion-text v-if="erro" color="danger">{{ erro }}</ion-text>
 
-              <!-- TODO: ligar ao login do Supabase -->
-              <ion-button expand="block" class="ion-margin-top">
+              <ion-button expand="block" :disabled="carregando" class="ion-margin-top" @click="entrar">
                 <ion-icon slot="start" :icon="logIn" />
                 Entrar
               </ion-button>
@@ -55,6 +55,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   IonPage,
   IonContent,
@@ -69,9 +70,33 @@ import {
   IonInputPasswordToggle,
   IonButton,
   IonIcon,
+  IonText,
 } from '@ionic/vue';
 import { personCircleOutline, mailOutline, lockClosedOutline, logIn } from 'ionicons/icons';
+import { supabase } from '@/supabase';
 
+const router = useRouter();
 const email = ref('');
 const senha = ref('');
+const erro = ref('');
+const carregando = ref(false);
+
+async function entrar() {
+  erro.value = '';
+  carregando.value = true;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: senha.value,
+  });
+
+  carregando.value = false;
+
+ if (error) {
+  erro.value = error.message;
+  return;
+}
+
+  router.replace('/tabs/tab1');
+}
 </script>

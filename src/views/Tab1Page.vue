@@ -11,13 +11,15 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-
+      <ion-button expand="block" fill="clear" router-link="/receitas" class="ion-margin-top">
+                Ir para receitas
+              </ion-button>
       <ExploreContainer name="Tab 1 page" />
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton } from '@ionic/vue';
 import ExploreContainer from '@/components/ExploreContainer.vue';
 </script>

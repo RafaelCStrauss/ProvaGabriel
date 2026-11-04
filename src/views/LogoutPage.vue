@@ -20,8 +20,7 @@
             </ion-card-header>
 
             <ion-card-content>
-              <!-- TODO: ligar ao signOut do Supabase -->
-              <ion-button expand="block" color="danger" router-link="/login">
+              <ion-button expand="block" color="danger" @click="sair">
                 <ion-icon slot="start" :icon="logOut" />
                 Sair
               </ion-button>
@@ -38,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -57,4 +57,12 @@ import {
   IonIcon,
 } from '@ionic/vue';
 import { logOut } from 'ionicons/icons';
+import { supabase } from '@/supabase';
+
+const router = useRouter();
+
+async function sair() {
+  await supabase.auth.signOut();
+  router.replace('/login');
+}
 </script>

@@ -21,8 +21,8 @@
 
             <ion-card-content>
               <ion-input
-                v-model="nome"
                 type="text"
+                v-model="nome"
                 label="Nome"
                 label-placement="floating"
                 fill="outline"
@@ -33,8 +33,8 @@
               </ion-input>
 
               <ion-input
-                v-model="email"
                 type="email"
+                v-model="email"
                 label="E-mail"
                 label-placement="floating"
                 fill="outline"
@@ -45,8 +45,8 @@
               </ion-input>
 
               <ion-input
-                v-model="senha"
                 type="password"
+                v-model="senha"
                 label="Senha"
                 label-placement="floating"
                 fill="outline"
@@ -58,8 +58,8 @@
               </ion-input>
 
               <ion-input
-                v-model="confirmarSenha"
                 type="password"
+                v-model="confirmarSenha"
                 label="Confirmar senha"
                 label-placement="floating"
                 fill="outline"
@@ -69,9 +69,10 @@
                 <ion-icon slot="start" :icon="lockClosedOutline" aria-hidden="true" />
                 <ion-input-password-toggle slot="end" />
               </ion-input>
+              <ion-text v-if="erro" color="danger">{{ erro }}</ion-text>
+              <ion-text v-if="sucesso" color="success">{{ sucesso }}</ion-text>
 
-              <!-- TODO: ligar ao signUp do Supabase -->
-              <ion-button expand="block" class="ion-margin-top">
+              <ion-button expand="block" :disabled="carregando" class="ion-margin-top" @click="cadastrar">
                 <ion-icon slot="start" :icon="personAdd" />
                 Cadastrar
               </ion-button>
@@ -108,11 +109,46 @@ import {
   IonInputPasswordToggle,
   IonButton,
   IonIcon,
+  IonText,
 } from '@ionic/vue';
 import { personAdd, personOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
+import { supabase } from '@/supabase';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const nome = ref('');
 const email = ref('');
 const senha = ref('');
 const confirmarSenha = ref('');
+const erro = ref('');
+const sucesso = ref('');
+const carregando = ref(false);
+
+async function cadastrar() {
+  erro.value = '';
+
+  if (senha.value !== confirmarSenha.value) {
+    erro.value = 'As senhas não são iguais';
+    return;
+  }
+
+  carregando.value = true;
+
+  const { error } = await supabase.auth.signUp({
+    email: email.value,
+    password: senha.value,
+    options: { data: { nome: nome.value } },
+  });
+
+  if (error) {
+    carregando.value = false;
+    erro.value = error.message;
+    return;
+  }
+
+  await supabase.auth.signOut();
+  carregando.value = false;
+  router.replace('/login');
+}
 </script>
