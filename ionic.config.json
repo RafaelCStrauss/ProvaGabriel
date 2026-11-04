@@ -1,0 +1,7 @@
+{
+  "name": "ProvaGabriel",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
