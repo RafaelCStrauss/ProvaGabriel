@@ -1,6 +1,5 @@
 <template>
   <div ref="raiz">
-    <!-- Formulário (serve para inserir e editar) -->
     <ion-card>
       <ion-card-header>
         <ion-card-title>{{ editandoId ? `Editar ${singular}` : `Nova ${singular}` }}</ion-card-title>
@@ -58,7 +57,6 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Listagem -->
     <ion-spinner v-if="carregando" class="ion-margin" />
 
     <ion-text v-else-if="registros.length === 0" color="medium">
@@ -113,14 +111,9 @@ interface Registro {
   descricao: string;
   valor: number;
   categoria: string;
-  data: string; // formato AAAA-MM-DD
+  data: string;
 }
 
-/**
- * Componente reutilizável: serve para receitas e despesas.
- * - tabela: nome da tabela no Supabase
- * - singular: palavra usada nos textos ("receita" ou "despesa")
- */
 const props = defineProps<{
   tabela: 'receitas' | 'despesas';
   singular: string;
@@ -160,7 +153,6 @@ function validar(): string {
   return '';
 }
 
-// LISTAR
 async function carregar() {
   carregando.value = true;
   const { data, error } = await supabase
@@ -176,7 +168,6 @@ async function carregar() {
   registros.value = data ?? [];
 }
 
-// INSERIR / EDITAR
 async function salvar() {
   erro.value = validar();
   if (erro.value) return;
@@ -190,7 +181,6 @@ async function salvar() {
     data: form.data,
   };
 
-  // No insert, o user_id é preenchido sozinho pelo banco (default auth.uid())
   const { error } = editandoId.value
     ? await supabase.from(props.tabela).update(dados).eq('id', editandoId.value)
     : await supabase.from(props.tabela).insert(dados);
@@ -214,14 +204,12 @@ function editar(r: Registro) {
   form.data = r.data;
   erro.value = '';
 
-  // sobe a tela até o formulário (usa o ion-content desta própria página)
   const conteudo = raiz.value?.closest('ion-content') as unknown as {
     scrollToTop?: (duracao?: number) => Promise<void>;
   } | null;
   conteudo?.scrollToTop?.(300);
 }
 
-// EXCLUIR
 async function confirmarExclusao(r: Registro) {
   const alerta = await alertController.create({
     header: `Excluir ${props.singular}`,
@@ -248,7 +236,6 @@ function formatarValor(valor: number) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Evita problema de fuso: não usa new Date() na string AAAA-MM-DD
 function formatarData(data: string) {
   const [ano, mes, dia] = data.split('-');
   return `${dia}/${mes}/${ano}`;

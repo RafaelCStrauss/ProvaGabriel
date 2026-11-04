@@ -1,33 +1,23 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import type { RouteRecordRaw } from 'vue-router';
 
-import TabsPage from '../views/TabsPage.vue';
+import TabsPage from '@/views/TabsPage.vue';
 import { supabase } from '@/supabase';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/tabs/dashboard',
   },
   {
     path: '/login',
     component: () => import('@/views/LoginPage.vue'),
+    meta: { publica: true },
   },
   {
     path: '/cadastro',
     component: () => import('@/views/CadastroPage.vue'),
-  },
-  {
-    path: '/receitas',
-    component: () => import('@/views/ReceitasPage.vue'),
-  },
-  {
-    path: '/despesas',
-    component: () => import('@/views/DespesasPage.vue'),
-  },
-  {
-    path: '/logout',
-    component: () => import('@/views/LogoutPage.vue'),
+    meta: { publica: true },
   },
   {
     path: '/tabs/',
@@ -35,21 +25,29 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        redirect: '/tabs/tab1',
+        redirect: '/tabs/dashboard',
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue'),
+        path: 'dashboard',
+        component: () => import('@/views/DashboardPage.vue'),
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue'),
+        path: 'receitas',
+        component: () => import('@/views/ReceitasPage.vue'),
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue'),
+        path: 'despesas',
+        component: () => import('@/views/DespesasPage.vue'),
+      },
+      {
+        path: 'sair',
+        component: () => import('@/views/LogoutPage.vue'),
       },
     ],
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
   },
 ];
 
@@ -58,16 +56,18 @@ const router = createRouter({
   routes,
 });
 
-const paginasPublicas = ['/login', '/cadastro'];
-
 router.beforeEach(async (to) => {
   const { data } = await supabase.auth.getSession();
   const logado = data.session !== null;
-  const ehPublica = paginasPublicas.includes(to.path);
+  const publica = to.meta.publica === true;
 
-  if (!logado && !ehPublica) return '/login';
-  if (logado && ehPublica) return '/tabs/tab1';
+  if (!logado && !publica) return '/login';
+  if (logado && publica) return '/tabs/dashboard';
   return true;
+});
+
+supabase.auth.onAuthStateChange((evento) => {
+  if (evento === 'SIGNED_OUT') router.replace('/login');
 });
 
 export default router;

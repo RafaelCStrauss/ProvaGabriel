@@ -92,11 +92,11 @@ async function entrar() {
 
   carregando.value = false;
 
- if (error) {
-  erro.value = error.message;
-  return;
-}
+  if (error) {
+    erro.value = error.message;
+    return;
+  }
 
-  router.replace('/tabs/tab1');
+  router.replace('/tabs/dashboard');
 }
 </script>

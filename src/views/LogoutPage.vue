@@ -2,15 +2,12 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button default-href="/tabs/tab1" text="Voltar" />
-        </ion-buttons>
         <ion-title>Sair</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="ion-padding">
-      <ion-grid class="ion-justify-content-center ion-align-items-center" style="min-height: 100%">
+      <ion-grid>
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="8" size-lg="5">
             <ion-card-header class="ion-text-center">
@@ -25,7 +22,7 @@
                 Sair
               </ion-button>
 
-              <ion-button expand="block" fill="clear" router-link="/tabs/tab1" class="ion-margin-top">
+              <ion-button expand="block" fill="clear" router-link="/tabs/dashboard" class="ion-margin-top">
                 Cancelar
               </ion-button>
             </ion-card-content>
@@ -43,8 +40,6 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonButtons,
-  IonBackButton,
   IonContent,
   IonGrid,
   IonRow,
